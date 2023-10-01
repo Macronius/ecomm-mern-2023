@@ -1,0 +1,11 @@
+FILE STRUCTURE
+
+proshop
+    []frontend
+    []backend
+    []uploads
+    []node_modules
+    package.json
+    .env
+    .git
+    .gitignore
