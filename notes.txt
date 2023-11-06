@@ -2,6 +2,28 @@ FILE STRUCTURE
 
 proshop
     []frontend
+        []public
+        []src
+            []assets
+            []components
+            []screens
+            []slices
+                apiSlice.js
+                //
+                cartSlice.js
+                productsApiSlice.js
+                //
+                authSlice.js
+                    actions:
+                    - setCredentials > set user to localStorage
+                    - logout > clear local storage
+                usersApiSlice.js
+            []utils
+            App.js
+            constants.js
+            index.js
+            store.js
+        package.json
     []backend
     []uploads
     []node_modules
@@ -9,3 +31,305 @@ proshop
     .env
     .git
     .gitignore
+
+
+INSTALLS
+
+ROOT DIRECTORY
+ecomm-proshop (main)$ npm init
+ecomm-proshop (main)$ npm install express
+ecomm-proshop (main)$ npm install -D nodemon concurrently
+ecomm-proshop (main)$ npm install -D dotenv
+ecomm-proshop (main)$ npm install bcryptjs
+ecomm-proshop (main)$ npm install colors
+ecomm-proshop (main)$ npm install jsonwebtoken
+ecomm-proshop (main)$ npm install cookie-parser
+
+FRONTEND DIRECTORY
+ecomm-proshop/frontend (main)$ npm install bootstrap react-bootstrap react-icons
+ecomm-proshop/frontend (main)$ npm install react-router-dom
+ecomm-proshop/frontend (main)$ npm install axios
+ecomm-proshop/frontend (main)$ npm install react-redux @reduxjs/toolkit
+ecomm-proshop/frontend (main)$ npm install react-toastify
+ecomm-proshop/frontend (main)$ npm install @paypal/react-paypal-js
+
+
+TECHNOLOGIES
+
+add color to the outputs in the terminal (?)
+
+react-router-dom
+    Link
+    useLocation
+    useNavigate
+
+app state management
+    https://redux.js.org/
+    https://redux-toolkit.js.org/
+    useDispatch - used to dispatch action, such as login and setCredentials
+    useSelector - used to get stuff from the state, such as the user
+
+ui framework
+    https://react-bootstrap.github.io/docs/components/spinners
+    https://react-bootstrap.github.io/docs/components/alerts
+
+authentication
+    https://jwt.io/
+    3-parts:
+        header, payload, signature
+    -
+    https://www.npmjs.com/package/cookie-parser
+    easily parse the cookie from the request object
+
+model / schema
+    Mongoosejs
+    - define a pre-hook for the model
+    https://mongoosejs.com/docs/api/schema.html#Schema.prototype.pre()
+
+    - define a method for the model, 2 ways:
+    https://mongoosejs.com/docs/api/schema.html#Schema.prototype.method()
+            NOTE: in userModel for userSchema, actually used userSchema.methods
+            QUESTION: difference between .method() and .methods.matchPassword?
+    - Guides > Schemas > Instance methods
+    https://mongoosejs.com/docs/guide.html
+
+password encryption
+    bcryptjs
+    https://www.npmjs.com/package/bcryptjs 
+    salt - in cryptography, a salt is random data fed as an additional input to a one-way function that hashes data, a password, or passphrase.  Salting helps define against attacks that use precomputed tables, by vastly growing the size of table needed for a successful attack.
+
+alerts
+    toastify
+    https://www.npmjs.com/package/react-toastify
+
+payments
+    PayPal
+    https://developer.paypal.com/dashboard/applications/sandbox
+
+    @paypal/react-paypal-js
+    https://www.npmjs.com/package/@paypal/react-paypal-js
+    solution: react-paypal-js provides a solution to devlopers to abstract away complexities around loading the JS SDK.  It enforces best practices by default so buyers get the best possible user experience.
+
+image - uploads
+    multer
+    https://www.npmjs.com/package/multer
+    go-to for uploading images with node.js
+    Multer is a node.js middleware for handling multipart/form-data, which is primarily used for uploading files. It is written on top of busboy for maximum efficiency.
+
+page titles
+    react-helmet-async
+    https://www.npmjs.com/package/react-helmet-async
+
+
+DATABASE
+MongoDB Atlas
+username: marcos
+password: 123457
+
+
+
+
+
+DEPLOYMENT
+DEP-01:
+durring development, the react dev server is on a local port (localhost:3000)
+the react dev server will not be available in production
+We instead want the root of the application to load the built (production) version of the application
+
+DEP-02:
+create an npm script to build from the root when we deploy to render, we're going to have to enter a command to build, but we don't want to run it from the server because it is going to have to be run in the frontend folder.
+in the root package.json, create a script called 'build', which will install both on the backend and frontend, and also run build on the frontend
+note:
+by running 'npm run build' in the root, it will build in the frontend folder
+
+
+
+
+
+LL-01: 
+With regard to bringing in modules, the default behavior of Node.js is to use commonjs.  In order to use the ES modules (import ___ from "___";) style used in the frontend, go to package.json file of root and add "type": "module"
+default:    const express = require("express");
+ES module:  import express from "express";
+
+LL-02:
+npm install -D, the -D is the flag for 'dev dependency,' which will not carry over to production
+
+LL-03:
+add "proxy": "http://localhost:5000" to the frontend directory's package.json file
+this makes things simpler (?when fetching data from the backend maybe?)
+
+LL-04:
+in the first version of this app, the authentication JWT token was stored in localStorage
+this time, I believe that JWT is stored on the database, while the neccessary
+
+LL-05:
+the react-toastify ToastContainer element goes in the App.js file, within the containing elements, but anywhere.  this is possible because it is ultimately positioned absolute
+
+LL-06:
+nameSlice deals with frontend state, and therefore localStorage
+nameApiSlice deals with backend state, and therefore tokens and cookies
+
+LL-07:
+when an "action?" is called from a state slice, at the very end of the procedure, a utils function called updateCart() is called.  This is what saves the data to localStorage on the client.
+example, action from cartSlice needs to be dispatched
+functions from apiSlice, example usersApiSlice, these just get called
+
+LL-08:
+not sure but...
+I have been wondering when to use <Message /> and when to throw new Error()
+I believe the difference might be frontend and backend
+
+LL-09:
+invalidatesTags: [""] not invalidateTags: [""]
+
+LL-10:
+to get a query parameter from the url, use req.query.queryParam
+
+
+
+QUESTIONS
+Q-01:
+when testing a GET api path on postman, i wanted to get data for a particular product.  Rather than taking the mongodb hashed id value from the url pathname, I went directly to the MongoDB compass, found the data entry for the particular product item, copied/pasted the _id value to VALUE section on postman, and it returned a not found.  I went to the url and copied/pasted the _id value and it worked.  It turns out, I had not actually used the MongoDB compass interface since the day before.  For some reason, the _id values did not match.  When I refreshed, the _id value in compass matched the one from the url browser.
+Why did the _id values change?
+
+
+Q-02:
+what is the difference between the following?
+[...Array(10).keys()]
+Array(10).keys()
+
+Q-03:
+why is it that when we install node packages for the backend, they go in the root folder and not actually within the backend folder?
+MY_ANSWER:
+I'm guessing the real distinction is made in the frontend folder.
+
+Q-04:
+with regard to the schema hooks from userModel, the 'this.' keyword is used.  It is my understanding that the 'this' keyword is referring to the thing that called it.  My question then is what exactly is the thing that called these methods?  What exactly is 'this' referring to?
+
+Q-05:
+export const {useLoginMutation} = userApiSlice;
+QUESTION: if the method is to be destructured from the usersApiSlice to be exported, then what is the point of containing the login method inside the usersApiSlice?  What am I not understanding?
+
+Q-06:
+is the difference between an apiSlice and a regularSlice that apiSlice is for backend/server work, and regularSlice is for frontend/client work
+
+Q-07:
+for const [login, {isLoading}] = useLoginMutation(), why isLoading in {}?
+
+Q-08: not in code
+with regard to import {useLocation} from 'react-router-dom', then const {search} = useLocation()
+QUESTION: how did you know that 'search' can be destructured from useLocation()?
+where in the documentation does it explain this?
+
+Q-09:
+How does userInfo reflect what is in localStorage and not state?
+In what way does 'navigate' change?
+
+Q:10:
+what exactly does this line do?
+
+Q-11:
+is the item exported from the reducer the action?
+
+Q-12:
+what is the difference between:
+const navigate = useNavigate();
+and
+Navigate
+A:
+one is a hook to be utilized within the logic and the other is a functional component that reroutes to="/path"
+
+Q-13:
+when:
+const navigate = useNavigate();
+then using navigate in a useEffect, why does navigate need to go inside the dependency array?  In what way does navigate change that would cause a re-render and therefore call useEffect again?
+
+Q-14:
+what is the difference between actions and slice?
+
+Q-15:
+when using Postman, how to know when to use
+Params > Path Variables
+versus
+Body > x www form-urlencoded?
+
+Q-16:
+why does the orderItems array in orderController > addOrderItems > const order = new Order({ orderItems: orderItems.map()})
+why does this need to say '_id: undefined' when the orderItems array in orderSchema of orderModel does not have a _id value?
+A:
+I think because once the schema is instantiated into an actual model, which does not have the _id value, once it is added to the mongodb, it is then given an _id value.
+It must therefore be acknowledged
+
+Q-17:
+why isn't apiSlice a default export?
+
+Q-18:
+why is order spread as an object?
+is it because an order consists of 
+
+Q-19:
+exactly what are the values that can be destructured from a particular api call?
+example
+const {data, refetch, isLoading, isError} = useGetOrderDetailsQuery(orderId)
+QUESTION:
+does the order matter?  data first, then functions, then isLoading, isError last?
+
+Q-20:
+why didn't we use the constants.js values from the frontend in the server.js file on the backend?
+
+Q-21:
+why does isLoading: rename have to be in an object, while all the other slice methods do not require the object?
+
+Q-22:
+ i don't quite understand why these dependencies.  
+ if the component state is initially set from application state with state.auth.userInfo
+ then the form is set to reflect the component state value
+ then a user can update the value, which is also set to component state
+ no matter what, the form is set to reflect component state
+ ASSUMPTION:
+ at some point, the application state will reflect component state in submitHandler
+
+Q-23:
+what is the difference between:
+new Date.now() and Date.now()
+is new Date.now() even correct?
+
+Q-24:
+is this line neccessary because of the await?  Don't want to save before update complete?
+line> const updatedProduct = await product.save();
+
+Q-25:
+- how do I know this requires a data object to be passed through?
+- if I didn't need to pass data through, and I only required _id from the data object, is it possible to simply destructure _id?
+- explain again invalidateTags
+
+Q-26:
+why doesn't this require a productController entry?
+
+Q-27:
+how to know when to use provideTabs: ['Users'] and when not to use?
+
+Q-28:
+why does this have to be await?  does the result depend on an operation that happens before?
+
+Q-29:
+why doesn't it work to destructure the data object into its constituent products, page, pages, then use products array?
+
+Q-30:
+make sure getTopProducts route is about "/:id", otherwise it will look at the word 'top' as an id?
+explain please
+
+Q-31:
+what determines the order of providers?
+
+
+
+TO DOs
+TODO-01:
+check on authUser.  It seems I can run authUser with unregistered user data and it runs
+
+TODO-02:
+move the ShippingScreen route to a private route, to prevent anyone not signed in from access
+
+TODO-03:
+find where shippingPrice comes from, set two decimal places
